@@ -1,0 +1,113 @@
+{
+  // #################### Compiler Options Start ####################
+  // 컴파일러 옵션
+  "compilerOptions": {
+    // 루트 디렉토리
+    "rootDir": ".",
+    // 시맨틱 기본 가져오기 허용
+    "allowSyntheticDefaultImports": true,
+    // 파일 이름에 일관된 대소문자 사용
+    "forceConsistentCasingInFileNames": false,
+    // 타겟 버전
+    "target": "ES5",
+    // 모듈 시스템
+    "module": "CommonJS",
+    // 모듈 확장자
+    "moduleResolution": "Node",
+    // 라이브러리
+    "lib": [
+      // 모듈 시스템
+      "ESNext",
+      // 비동기 반복 가능한 반복기
+      "ESNext.AsyncIterable",
+      // 돔
+      "DOM"
+    ],
+    // 모듈 시스템 상호 운용
+    "esModuleInterop": true,
+    // 자바스크립트 파일 허용
+    "allowJs": false,
+    // 자바스크립트 파일 검사
+    "checkJs": false,
+    // 소스 맵 생성
+    "sourceMap": false,
+    // 소스 맵 안줄
+    "inlineSources": false,
+    // 소스 맵 안줄
+    "inlineSourceMap": false,
+    // 엄격 모드
+    "strict": false,
+    // 컴파일 안함
+    "noEmit": false,
+    // 실험적 데코레이터
+    "experimentalDecorators": true,
+    // 데코레이터 메타데이터 방출
+    "emitDecoratorMetadata": true,
+    // 명시적 any 에러
+    "noImplicitAny": false,
+    // 엄격한 null 검사
+    "strictNullChecks": false,
+    // JSON 모듈 해석
+    "resolveJsonModule": true,
+    // 선언 맵 생성
+    "declarationMap": false,
+    // 선언 파일 생성
+    "declaration": false,
+    // 다운레벨 반복 가능한 반복기
+    "downlevelIteration": true,
+    // 기본 URL
+    "baseUrl": ".",
+    // 경로 별칭
+    "paths": {
+      // 루트 디렉토리
+      "~/*": ["./*"],
+      // 루트 디렉토리
+      "@/*": ["./*"]
+    },
+    // 타입
+    "types": [
+      // 노드
+      "@types/node",
+      // 제스트
+      "@types/jest",
+      // 넉스트
+      "@nuxt/types",
+      // 액시오스
+      "@nuxtjs/axios"
+      // 타입
+      //"./types",
+      // 파이어베이스
+      //"@nuxtjs/firebase",
+    ]
+  },
+  // 제외할 파일 및 디렉토리
+  "exclude": [
+    // 노드 모듈
+    "node_modules",
+    // 넉스트
+    ".nuxt",
+    // 배포
+    "dist",
+    // 테스트
+    "src/**/*.test.ts",
+    // 정적 파일
+    "**/src/static/**/*",
+    // 자바스크립트
+    "**/*.js"
+  ],
+  // 타입독 옵션
+  "typedocOptions": {
+    // 모드
+    "mode": "modules",
+    // 저장
+    "out": "docs",
+    // 제외할 파일 및 디렉토리
+    "exclude": "**/*+(.test).ts, **/test/**",
+    // 제외할 타입
+    "excludeExternals": true,
+    // 버전 포함
+    "includeVersion": true,
+    // 제외할 기본 라이브러리
+    "hideGenerator": true
+  }
+}
