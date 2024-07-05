@@ -7,24 +7,26 @@
     <img :src="product.prdImage" class="card-img-top img-thumbnail" alt="product.prdName" />
 
     <div class="card-header text-center d-flex justify-content-between">
-      <div>상품명</div>
-      <div><p class="h6">{{ product.prdName }}</p></div>
+      <div><span class="badge badge-info">상품명</span></div>
+      <div>
+        <p class="h6">{{ product.prdName }}</p>
+      </div>
     </div>
 
     <div class="card-body">
-      <p class="card-text">상품설명</p>
+      <div><span class="badge badge-info">상품설명</span></div>
       <small class="text-muted">{{ product.prdDesc }}</small>
     </div>
 
     <ul class="list-group list-group-flush">
       <li class="list-group-item text-center d-flex justify-content-between">
-        <div>금액</div>
+        <div><span class="badge badge-info">금액</span></div>
         <h6>{{ formatCurrency(product.prdPrice) }}</h6>
       </li>
     </ul>
 
     <div class="card-footer text-center d-flex justify-content-between">
-      <div><small class="text-body-secondary">상품ID</small></div>
+      <div><span class="badge badge-info">상품ID</span></div>
       <div><small class="text-body-secondary">{{ product.prdId }}</small></div>
     </div>
   </div>
@@ -38,14 +40,13 @@ import { ProductModel } from '@/models/product-model'
 @Component
 export default class ProductCardComponent extends Vue {
 
-    @Prop() product!: ProductModel;
+  @Prop() product!: ProductModel;
 
-    formatCurrency(value: number): string {
-      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
-    }
+  formatCurrency(value: number): string {
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
+  }
 
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

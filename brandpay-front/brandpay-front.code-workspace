@@ -1,0 +1,86 @@
+{
+  // 폴더 설정
+  "folders": [
+    {
+      // 폴더 경로
+      "path": "."
+    }
+  ],
+
+  // 설정
+  "settings": {
+    // #################### Editor Setting Start ####################
+    // 코드 정렬 포맷터
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    // 자바스크립트 코드 정렬
+    "[javascript]": {
+      // 코드 정렬 포맷터
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // JSON 코드 정렬
+    "[jsonc]": {
+      // 코드 정렬 포맷터
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // 타입스크립트 코드 정렬
+    "[typescript]": {
+      // 코드 정렬 포맷터
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    // Vue 코드 정렬
+    "[vue]": {
+      // 코드 정렬 포맷터
+      "editor.defaultFormatter": "Vue.volar"
+    },
+
+    // 폰트 설정
+    "editor.fontFamily": "D2Coding, Consolas, 나눔고딕코딩, 'Courier New', monospace",
+
+    // 붙여넣기 시 자동 정렬
+    "editor.formatOnPaste": true,
+
+    // 저장 시 자동 정렬
+    "editor.formatOnSave": true,
+
+    // 타이핑 시 자동 정렬
+    "editor.formatOnType": true,
+
+    // 제안 선택 옵션
+    "editor.suggestSelection": "first",
+
+    // 탭 사이즈
+    "editor.tabSize": 2,
+    // #################### Editor Setting End ####################
+
+    // #################### Explorer Setting Start ####################
+    // 파일 열기 시 폴더 자동 열기
+    "explorer.autoReveal": true,
+    // #################### Explorer Setting End ####################
+
+    // #################### Files Setting Start ####################
+    // 파일 확장자 연결
+    "files.associations": {
+      // 자동 열기 확장자
+      "*.json": "jsonc"
+    },
+
+    // 줄 바꿈 문자
+    "files.eol": "\n",
+    // #################### Files Setting End ####################
+
+    // #################### Workbench Setting Start ####################
+    // 아이콘 테마
+    "workbench.iconTheme": "material-icon-theme",
+    // #################### Workbench Setting End ####################
+
+    // #################### GIT Setting Start ####################
+    // GIT
+    // 자동 업데이트
+    "git.autoFetch": true
+    // #################### GIT Setting End ####################
+  }
+}  
