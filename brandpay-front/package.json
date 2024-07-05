@@ -19,6 +19,7 @@
   "dependencies": {
     "@tosspayments/tosspayments-sdk": "^2.2.0",
     "@types/jest": "^29.5.12",
+    "bootstrap-vue": "^2.23.1",
     "core-js": "^3.25.3",
     "cross-env": "^7.0.3",
     "nanoid": "^5.0.7",
