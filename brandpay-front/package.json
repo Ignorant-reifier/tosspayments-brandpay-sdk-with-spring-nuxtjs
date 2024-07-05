@@ -17,6 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@tosspayments/tosspayments-sdk": "^2.2.0",
     "@types/jest": "^29.5.12",
     "core-js": "^3.25.3",
     "cross-env": "^7.0.3",
