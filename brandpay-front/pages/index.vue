@@ -32,9 +32,8 @@ export default class Index extends Vue {
   }
 
   async getProductList() {
-    await this.$axios.get('http://localhost:8080/product/product-list')
+    await this.$axios.get('/api/product/product-list')
       .then((res) => {
-        console.log(res.data)
         this.products = res.data
       })
       .catch((err) => {

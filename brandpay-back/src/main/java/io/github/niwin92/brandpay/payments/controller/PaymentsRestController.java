@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,15 +36,32 @@ public class PaymentsRestController {
         return ResponseEntity.ok(dtoToMapList);
     }
 
-    @RequestMapping("/callback-auth")
+    @GetMapping("/callback-auth")
     public String callbackAuth(HttpServletRequest request, HttpServletResponse response){
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        System.out.println("request  : " + request);
-        System.out.println("response : " + response);
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        log.info("code  : " + request.getParameter("code"));
+        log.info("customerKey : " + request.getParameter("customerKey"));
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
         return "";
     }
 
+    @RequestMapping(value = "/callback-success")
+    public String callbackSuccess(HttpServletRequest request, HttpServletResponse response,
+                                   @RequestParam(value = "customerKey") String customerKey) {
 
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        log.info("customerKey : " + customerKey);
+        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        return "";
+    }
+
+    @RequestMapping(value = "/callback-fail")
+    public String callbackFail(HttpServletRequest request, HttpServletResponse response) {
+
+        return "";
+    }
 
 }

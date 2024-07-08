@@ -3,7 +3,7 @@
     <div>
       <ProductCardComponent :product="product" />
     </div>
-    
+
     <div>
       <div class="form-group row mb-2">
         <label for="orderId" class="col-sm-2 col-form-label">주문번호</label>
@@ -118,10 +118,9 @@ export default class ProductDetailComponent extends Vue {
 
     const customerKey = this.customerKey
 
-    this.brandpay = this.tossPayments.brandpay({
+    this.brandpay = await this.tossPayments.brandpay({
       customerKey,
-      redirectUrl: window.location.origin + '/callback-auth',
-      //redirectUrl: "http://192.168.92.194:8080/payments/callback-auth",
+      redirectUrl: window.location.origin + "/api/payments/callback-auth",
     })
   }
 
@@ -139,9 +138,7 @@ export default class ProductDetailComponent extends Vue {
 
   async paymentButton() {
 
-    console.log("window.location.origin", window.location.origin)
-
-    this.brandpay.requestPayment({
+    await this.brandpay.requestPayment({
       amount: {
         currency: "KRW",
         value: this.product.prdPrice
@@ -153,8 +150,8 @@ export default class ProductDetailComponent extends Vue {
       customerEmail: this.customerEmail,
       //customerMobilePhone: this.customerMobilePhone,
 
-      //successUrl: window.location.origin + '/callback-success',
-      //failUrl: window.location.origin + '/callback-fail',
+      successUrl: window.location.origin + "/api/payments/callback-success",
+      failUrl: window.location.origin + '/api/payments/callback-fail',
     })
     
   }
