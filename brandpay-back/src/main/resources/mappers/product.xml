@@ -6,4 +6,9 @@
         SELECT * FROM PRODUCT
     </select>
 
+    <select id="findById" parameterType="String" resultType="io.github.niwin92.brandpay.product.ProductDto">
+        SELECT * FROM PRODUCT
+        WHERE PRD_ID = #{prdId}
+    </select>
+
 </mapper>

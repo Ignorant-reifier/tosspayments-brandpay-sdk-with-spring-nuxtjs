@@ -1,5 +1,5 @@
 export interface ProductModel {
-    prdId: number
+    prdId: string
     prdNm: string
     prdDesc: string
     prdPrice: number

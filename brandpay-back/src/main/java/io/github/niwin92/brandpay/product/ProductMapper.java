@@ -8,4 +8,6 @@ public interface ProductMapper {
 
     List<ProductDto> findAll();
 
+    ProductDto findById(String prdId);
+
 }

@@ -2,8 +2,10 @@
   <div class="container-sm">
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-      <div v-for="product in products" :key="product.prdId" class="col mt-4 mb-4" @click="goProductDetail(product)">
-        <ProductCardComponent :product="product" />
+      <div v-for="product in products" :key="product.prdId" class="col mt-4 mb-4">
+        <nuxt-link :to="{ path: '/product/product-detail/', query: { prdId: product.prdId } }">
+          <product-card-component :product="product" />
+        </nuxt-link>
       </div>
     </div>
 
@@ -39,12 +41,6 @@ export default class Index extends Vue {
       .catch((err) => {
         console.log(err)
       })
-  }
-
-  goProductDetail(product: ProductModel) {
-    console.log(product.prdId)
-    localStorage.setItem('selectedProduct', JSON.stringify(product));
-    this.$router.push({ path: '/product/product-detail', params: { prdId: product.prdId.toString() } })
   }
 
 }

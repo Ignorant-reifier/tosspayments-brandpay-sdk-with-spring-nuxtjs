@@ -17,4 +17,8 @@ public class ProductService {
         return productMapper.findAll();
     }
 
+    public ProductDto findById(String prdId) {
+        return productMapper.findById(prdId);
+    }
+
 }
