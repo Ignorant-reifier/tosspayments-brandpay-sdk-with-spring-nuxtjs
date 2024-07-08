@@ -14,9 +14,9 @@ import lombok.experimental.SuperBuilder;
 public class ProductDto {
 
     private String prdId;
-    private String prdName;
+    private String prdNm;
     private int prdPrice;
     private String prdDesc;
-    private String prdImage;
+    private String prdImg;
 
 }

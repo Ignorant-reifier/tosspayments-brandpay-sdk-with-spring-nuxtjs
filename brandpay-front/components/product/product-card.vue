@@ -4,12 +4,12 @@
   -->
 
   <div class="card shadow">
-    <img :src="product.prdImage" class="card-img-top img-thumbnail" alt="product.prdName" />
+    <img :src="product.prdImg" class="card-img-top img-thumbnail" alt="product.prdName" />
 
     <div class="card-header text-center d-flex justify-content-between">
       <div><span class="badge badge-info">상품명</span></div>
       <div>
-        <p class="h6">{{ product.prdName }}</p>
+        <p class="h6">{{ product.prdNm }}</p>
       </div>
     </div>
 

@@ -1,7 +1,7 @@
 export interface ProductModel {
     prdId: number
-    prdName: string
+    prdNm: string
     prdDesc: string
     prdPrice: number
-    prdImage: string
+    prdImg: string
 }

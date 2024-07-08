@@ -3,6 +3,7 @@
     <div>
       <ProductCardComponent :product="product" />
     </div>
+    
     <div>
       <div class="form-group row mb-2">
         <label for="orderId" class="col-sm-2 col-form-label">주문번호</label>
@@ -50,7 +51,7 @@
       <div class="form-group row">
         <label for="prdName" class="col-sm-2 col-form-label">상품명</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control-plaintext" id="prdName" v-model="this.product.prdName" readonly>
+          <input type="text" class="form-control-plaintext" id="prdName" v-model="this.product.prdNm" readonly>
         </div>
       </div>
 
@@ -146,7 +147,7 @@ export default class ProductDetailComponent extends Vue {
         value: this.product.prdPrice
       },
       orderId: this.orderId,
-      orderName: this.product.prdName,
+      orderName: this.product.prdNm,
 
       customerName: this.customerName,
       customerEmail: this.customerEmail,
