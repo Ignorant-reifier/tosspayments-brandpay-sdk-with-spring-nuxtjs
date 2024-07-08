@@ -13,8 +13,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-import vueSession from 'vue-session'
-
 import { ProductModel } from '@/models/product-model'
 
 import ProductCardComponent from '@/components/product/product-card.vue'
@@ -22,7 +20,6 @@ import ProductCardComponent from '@/components/product/product-card.vue'
 @Component({
   components: {
     ProductCardComponent,
-    vueSession
   }
 })
 export default class Index extends Vue {

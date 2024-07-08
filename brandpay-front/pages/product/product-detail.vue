@@ -1,46 +1,99 @@
 <template>
-  <!--
-    https://getbootstrap.com/docs/4.6/components/card/
-  -->
+  <div class="row row-cols-1 row-cols-sm-2">
+    <div>
+      <ProductCardComponent :product="product" />
+    </div>
+    <div>
+      <div class="form-group row mb-2">
+        <label for="orderId" class="col-sm-2 col-form-label">주문번호</label>
+        <div class="col-sm-8">
+          <input type="text" class="form-control-plaintext" id="orderId" v-model="this.orderId" readonly>
+        </div>
+        <button type="button" class="btn btn-primary" @click="changeOrderId()">랜덤</button>
+      </div>
 
-  <div class="card shadow">
-    <img :src="product.prdImage" class="card-img-top img-thumbnail" alt="product.prdName" />
+      <div class="form-group row">
+        <label for="customerName" class="col-sm-2 col-form-label">고객 명</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="customerName" v-model="this.customerName">
+        </div>
+      </div>
 
-    <div class="card-header text-center d-flex justify-content-between">
-      <div><span class="badge badge-info">상품명</span></div>
+      <div class="form-group row">
+        <label for="customerEmail" class="col-sm-2 col-form-label">고객 이메일</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="customerEmail" v-model="this.customerEmail">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="customerMobilePhone" class="col-sm-2 col-form-label">고객 휴대폰번호</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="customerMobilePhone" v-model="this.customerMobilePhone">
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="prdId" class="col-sm-2 col-form-label">상품ID</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control-plaintext" id="prdId" v-model="this.product.prdId" readonly>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="prdName" class="col-sm-2 col-form-label">상품명</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control-plaintext" id="prdName" v-model="this.product.prdName" readonly>
+        </div>
+      </div>
+
+      <div class="form-group row">
+        <label for="prdPrice" class="col-sm-2 col-form-label">금액</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control-plaintext" id="prdPrice" v-model="this.product.prdPrice" readonly>
+        </div>
+      </div>
+
       <div>
-        <p class="h6">{{ product.prdName }}</p>
+        <button type="button" class="btn btn-primary" @click="paymentButton()">결제하기</button>
       </div>
     </div>
-
-    <div class="card-body">
-      <div><span class="badge badge-info">상품설명</span></div>
-      <small class="text-muted">{{ product.prdDesc }}</small>
-    </div>
-
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item text-center d-flex justify-content-between">
-        <div><span class="badge badge-info">금액</span></div>
-        <h6>{{ formatCurrency(product.prdPrice) }}</h6>
-      </li>
-    </ul>
-
-    <div class="card-footer text-center d-flex justify-content-between">
-      <div><span class="badge badge-info">상품ID</span></div>
-      <div><small class="text-body-secondary">{{ product.prdId }}</small></div>
-    </div>
   </div>
-
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { ProductModel } from '@/models/product-model'
 
-@Component
+import ProductCardComponent from '@/components/product/product-card.vue'
+
+import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk"
+
+@Component({
+  components: {
+    ProductCardComponent,
+  }
+})
 export default class ProductDetailComponent extends Vue {
 
+  // 상품 정보
   product!: ProductModel
+
+  // Toss 결제 테스트용 키
+  clientKey: string = 'test_ck_5OWRapdA8dP6a9GmjzkR8o1zEqZK'
+
+  // 주문번호 : 랜덤생성
+  orderId: string = window.btoa(Math.random().toString()).slice(0, 20)
+
+  // 고객명
+  customerName: string = "전석호"
+  // 고객이메일
+  customerEmail: string = "reifier@kakao.com"
+  // 고객 휴대폰번호
+  customerMobilePhone: string = "01062690425"
+
+  tossPayments: any
+  brandpay: any
 
   created() {
     const selectedProduct = localStorage.getItem('selectedProduct')
@@ -50,8 +103,46 @@ export default class ProductDetailComponent extends Vue {
     //localStorage.removeItem('selectedProduct')
   }
 
+  async mounted() {
+    this.tossPayments = await loadTossPayments(this.clientKey)
+    
+    const customerKey = ANONYMOUS
+
+    this.brandpay = this.tossPayments.brandpay({
+      customerKey,
+      //redirectUrl: window.location.origin + '/callback-auth',
+      redirectUrl: "http://192.168.92.194:8080/payments/callback-auth",
+    })
+  }
+
+  changeOrderId() {
+    this.orderId = window.btoa(Math.random().toString()).slice(0, 20)
+  }
+
   formatCurrency(value: number): string {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
+  }
+
+  paymentButton() {
+
+    console.log("window.location.origin", window.location.origin)
+
+    this.brandpay.requestPayment({
+      amount: {
+        currency: "KRW",
+        value: this.product.prdPrice
+      },
+      orderId: this.orderId,
+      orderName: this.product.prdName,
+
+      customerName: this.customerName,
+      customerEmail: this.customerEmail,
+      //customerMobilePhone: this.customerMobilePhone,
+
+      successUrl: window.location.origin + '/callback-success',
+      failUrl: window.location.origin + '/callback-fail',
+    })
+    
   }
 
 }

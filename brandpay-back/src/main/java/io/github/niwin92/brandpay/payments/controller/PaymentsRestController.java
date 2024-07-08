@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,5 +38,16 @@ public class PaymentsRestController {
         List<Map<String,Object>> dtoToMapList = new ArrayList<Map<String,Object>>();
         return ResponseEntity.ok(dtoToMapList);
     }
+
+    @RequestMapping("/callback-auth")
+    public String callbackAuth(HttpServletRequest request, HttpServletResponse response){
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        System.out.println("request  : " + request);
+        System.out.println("response : " + response);
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        return "";
+    }
+
+
 
 }
