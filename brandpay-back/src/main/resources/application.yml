@@ -16,7 +16,8 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mappers/**/*.xml
-
+  configuration:
+    mapUnderscoreToCamelCase: true
 ---
 spring:
   profiles: local
