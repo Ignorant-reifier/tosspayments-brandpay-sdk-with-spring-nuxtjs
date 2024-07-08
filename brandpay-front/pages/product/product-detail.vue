@@ -9,7 +9,14 @@
         <div class="col-sm-8">
           <input type="text" class="form-control-plaintext" id="orderId" v-model="this.orderId" readonly>
         </div>
-        <button type="button" class="btn btn-primary" @click="changeOrderId()">랜덤</button>
+        <button type="button" class="btn btn-primary" @click="changeRandom('orderId')">랜덤</button>
+      </div>
+
+      <div class="form-group row mb-2">
+        <label for="customerKey" class="col-sm-2 col-form-label">고객 Key</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="customerKey" v-model="this.customerKey">
+        </div>
       </div>
 
       <div class="form-group row">
@@ -79,12 +86,11 @@ export default class ProductDetailComponent extends Vue {
   // 상품 정보
   product!: ProductModel
 
-  // Toss 결제 테스트용 키
-  clientKey: string = 'test_ck_5OWRapdA8dP6a9GmjzkR8o1zEqZK'
-
   // 주문번호 : 랜덤생성
   orderId: string = window.btoa(Math.random().toString()).slice(0, 20)
 
+  // 고객 Key : 랜덤생성
+  customerKey: string = "reifier_20240708"
   // 고객명
   customerName: string = "전석호"
   // 고객이메일
@@ -92,8 +98,11 @@ export default class ProductDetailComponent extends Vue {
   // 고객 휴대폰번호
   customerMobilePhone: string = "01062690425"
 
-  tossPayments: any
-  brandpay: any
+  tossPayments: any = null
+  brandpay: any = null
+
+  // Toss 결제 테스트용 키
+  clientKey: string = 'test_ck_5OWRapdA8dP6a9GmjzkR8o1zEqZK'
 
   created() {
     const selectedProduct = localStorage.getItem('selectedProduct')
@@ -105,25 +114,29 @@ export default class ProductDetailComponent extends Vue {
 
   async mounted() {
     this.tossPayments = await loadTossPayments(this.clientKey)
-    
-    const customerKey = ANONYMOUS
+
+    const customerKey = this.customerKey
 
     this.brandpay = this.tossPayments.brandpay({
       customerKey,
-      //redirectUrl: window.location.origin + '/callback-auth',
-      redirectUrl: "http://192.168.92.194:8080/payments/callback-auth",
+      redirectUrl: window.location.origin + '/callback-auth',
+      //redirectUrl: "http://192.168.92.194:8080/payments/callback-auth",
     })
   }
 
-  changeOrderId() {
-    this.orderId = window.btoa(Math.random().toString()).slice(0, 20)
+  changeRandom(division: string) {
+    if (division === "orderId") {
+      this.orderId = window.btoa(Math.random().toString()).slice(0, 20)
+    } else {
+      this.customerKey = window.btoa(Math.random().toString()).slice(0, 20)
+    }
   }
 
   formatCurrency(value: number): string {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
   }
 
-  paymentButton() {
+  async paymentButton() {
 
     console.log("window.location.origin", window.location.origin)
 
@@ -139,8 +152,8 @@ export default class ProductDetailComponent extends Vue {
       customerEmail: this.customerEmail,
       //customerMobilePhone: this.customerMobilePhone,
 
-      successUrl: window.location.origin + '/callback-success',
-      failUrl: window.location.origin + '/callback-fail',
+      //successUrl: window.location.origin + '/callback-success',
+      //failUrl: window.location.origin + '/callback-fail',
     })
     
   }
