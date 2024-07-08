@@ -32,6 +32,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.hibernate:hibernate-validator:6.0.16.Final'
 
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+	implementation 'org.apache.httpcomponents:httpclient:4.5'
+	// https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
 	// https://copycoding.tistory.com/299
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 	// h2

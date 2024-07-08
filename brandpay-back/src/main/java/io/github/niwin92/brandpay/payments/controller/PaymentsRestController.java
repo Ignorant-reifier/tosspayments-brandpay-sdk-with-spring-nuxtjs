@@ -7,7 +7,9 @@ import io.github.niwin92.brandpay.common.dto.OriginConvertDto;
 import io.github.niwin92.brandpay.common.dto.OriginDto;
 import io.github.niwin92.brandpay.common.dto.OriginNamingDto;
 import io.github.niwin92.brandpay.common.dto.OriginUnderDto;
+import io.github.niwin92.brandpay.common.exception.CustomServerException;
 import io.github.niwin92.brandpay.common.utility.StringUtils;
+import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 public class PaymentsRestController {
 
     @Autowired
-    public ModelMapper modelMapperCamelToUnder;
+    private PaymentService paymentService;
 
     @PostMapping("/v1/confirm")
     public ResponseEntity dtoToMap1(@RequestBody OriginDto dto){
@@ -39,11 +41,14 @@ public class PaymentsRestController {
     @GetMapping("/callback-auth")
     public String callbackAuth(HttpServletRequest request, HttpServletResponse response){
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("code  : " + request.getParameter("code"));
-        log.info("customerKey : " + request.getParameter("customerKey"));
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
+        try {
+            String code = request.getParameter("code");
+            String customerKey = request.getParameter("customerKey");
+            PaymentDto.Request requestParam = PaymentDto.Request.builder().code(code).customerKey(customerKey).build();
+            paymentService.callAuth(requestParam);
+        } catch (Exception e) {
+           throw new CustomServerException("에러");
+        }
         return "";
     }
 
