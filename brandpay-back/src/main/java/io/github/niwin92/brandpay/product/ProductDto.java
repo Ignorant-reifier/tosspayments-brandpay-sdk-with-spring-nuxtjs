@@ -1,4 +1,4 @@
-package io.github.niwin92.product;
+package io.github.niwin92.brandpay.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

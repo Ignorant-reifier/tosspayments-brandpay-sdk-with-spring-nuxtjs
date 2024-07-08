@@ -1,4 +1,4 @@
-package io.github.niwin92.product;
+package io.github.niwin92.brandpay.product;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/product-list")
+    @GetMapping("product-list")
     public ResponseEntity<List<ProductDto>> productList() {
 
         List<ProductDto> productList = productService.findAll();
