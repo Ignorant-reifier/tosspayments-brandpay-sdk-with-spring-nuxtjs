@@ -3,24 +3,21 @@ package io.github.niwin92.brandpay.payments.controller;
 import io.github.niwin92.brandpay.common.exception.CustomServerException;
 import io.github.niwin92.brandpay.common.response.ResponseData;
 import io.github.niwin92.brandpay.common.response.Result;
-import io.github.niwin92.brandpay.common.response.ResultCode;
 import io.github.niwin92.brandpay.common.utility.CommonUtils;
 import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.rmi.ServerException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+
 
 @Slf4j
 @Service
@@ -33,26 +30,40 @@ public class PaymentService {
     @Value("${api.url}")
     public String brandUrl;
 
-    public ResponseData callAuth(PaymentDto.Request dto) throws Exception {
-        ResponseData relayResponse = new ResponseData();
+    @Value("${api.secretKey}")
+    public String secretKey;
+
+    public String accessTokeUrl = brandUrl + "/v1/brandpay/authorizations/access-token";
+
+    public ResponseData<String> accessToken(PaymentDto.Request dto) throws Exception {
+        ResponseData<String> responseData = new ResponseData<>();
         try {
-            Map<String,String> map = new HashMap<>();
-            map.put("code", dto.getCode());
-            map.put("customerKey", dto.getCustomerKey());
+            String code = dto.getCode();
+            String customerKey = dto.getCustomerKey();
 
-            String url = CommonUtils.relayURL(brandUrl + "/api/v1/relay/callAuth", map);
+            secretKey = secretKey + ":";
+            String encodedSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 
-            ResponseEntity<String> result = restTemplate.getForEntity(new URI(url), String.class);
-            if(result.getStatusCode().equals(HttpStatus.OK)){
-                relayResponse.setResult(Result.builder().code("200").message("성공").build());
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", String.format("Basic %s", encodedSecretKey));
+            headers.set("Content-Type", "application/json");
+
+            String body = String.format("{\"grantType\":\"AuthorizationCode\",\"customerKey\":\"%s\",\"code\":\"%s\"}", customerKey, code);
+            HttpEntity<String> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<String> response = restTemplate.exchange(accessTokeUrl, HttpMethod.POST, entity, String.class);
+
+            if(response.getStatusCode().equals(HttpStatus.OK)){
+                responseData.setList(response.getBody());
+                responseData.setResult(Result.builder().code("200").message("성공").build());
             } else {
-                throw new CustomServerException(String.valueOf(result.getStatusCode()));
+                responseData.setResult(Result.builder().code("500").message(response.getBody()).build());
             }
         } catch (Exception ex){
             log.error(ex.getMessage());
-            throw ex;
+            throw new CustomServerException(ex);
+
         }
-        return relayResponse;
+        return responseData;
     }
 
 }

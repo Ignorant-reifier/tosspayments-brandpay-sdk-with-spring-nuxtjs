@@ -8,6 +8,7 @@ import io.github.niwin92.brandpay.common.dto.OriginDto;
 import io.github.niwin92.brandpay.common.dto.OriginNamingDto;
 import io.github.niwin92.brandpay.common.dto.OriginUnderDto;
 import io.github.niwin92.brandpay.common.exception.CustomServerException;
+import io.github.niwin92.brandpay.common.response.ResponseData;
 import io.github.niwin92.brandpay.common.utility.StringUtils;
 import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
 import lombok.extern.slf4j.Slf4j;
@@ -39,33 +40,29 @@ public class PaymentsRestController {
     }
 
     @GetMapping("/callback-auth")
-    public String callbackAuth(HttpServletRequest request, HttpServletResponse response){
-
+    public ResponseEntity<ResponseData> callbackAuth(HttpServletRequest request, HttpServletResponse response){
+        ResponseData result = null;
         try {
             String code = request.getParameter("code");
             String customerKey = request.getParameter("customerKey");
             PaymentDto.Request requestParam = PaymentDto.Request.builder().code(code).customerKey(customerKey).build();
-            paymentService.callAuth(requestParam);
-        } catch (Exception e) {
-           throw new CustomServerException("에러");
+            result = paymentService.accessToken(requestParam);
+        } catch (Exception ex) {
+           throw new CustomServerException(ex);
         }
-        return "";
+        return ResponseEntity.ok().body(result);
     }
 
     @RequestMapping(value = "/callback-success")
-    public String callbackSuccess(HttpServletRequest request, HttpServletResponse response,
-                                   @RequestParam(value = "customerKey") String customerKey) {
-
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        log.info("customerKey : " + customerKey);
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
+    public String callbackSuccess(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "customerKey") String customerKey) {
+        log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        log.debug("customerKey : " + customerKey);
+        log.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
         return "";
     }
 
     @RequestMapping(value = "/callback-fail")
     public String callbackFail(HttpServletRequest request, HttpServletResponse response) {
-
         return "";
     }
 

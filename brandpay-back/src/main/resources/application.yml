@@ -39,6 +39,8 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
 api:
   url: https://api.tosspayments.com
+  secretKey: secretKey
+
 ---
 spring:
   profiles: local-oracle
