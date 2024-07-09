@@ -33,9 +33,10 @@ public class PaymentService {
     @Value("${api.secretKey}")
     public String secretKey;
 
-    public String accessTokeUrl = brandUrl + "/v1/brandpay/authorizations/access-token";
+    public String accessTokeUrl = "";
 
     public ResponseData<String> accessToken(PaymentDto.Request dto) throws Exception {
+        accessTokeUrl = brandUrl + "/v1/brandpay/authorizations/access-token";
         ResponseData<String> responseData = new ResponseData<>();
         try {
             String code = dto.getCode();
@@ -53,6 +54,7 @@ public class PaymentService {
             ResponseEntity<String> response = restTemplate.exchange(accessTokeUrl, HttpMethod.POST, entity, String.class);
 
             if(response.getStatusCode().equals(HttpStatus.OK)){
+                log.info(response.getBody());
                 responseData.setList(response.getBody());
                 responseData.setResult(Result.builder().code("200").message("성공").build());
             } else {
