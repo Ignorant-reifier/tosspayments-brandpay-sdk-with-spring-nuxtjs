@@ -1,77 +1,96 @@
 <template>
-  <div class="row row-cols-1 row-cols-sm-2">
+  <div v-if="product">
+    <div class="row justify-content-md-center mt-5">
 
-    <div v-if="product">
-      <product-card-component :product="product" />
-    </div>
+      <div class="col col-lg-5 row justify-content-center">
+        <img :src="product.prdImg" class="img-thumbnail" alt="product.prdNm" />
+      </div>
 
-    <div>
-      <div>
-        <div class="form-group row mb-2">
-          <label for="orderId" class="col-sm-2 col-form-label">주문번호</label>
-          <div class="col-sm-8">
-            <input type="text" class="form-control-plaintext" id="orderId" v-model="orderId" readonly>
+      <div class="col col-lg-5">
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="orderId">주문번호</span>
           </div>
-          <button type="button" class="btn btn-primary" @click="changeRandom('orderId')">랜덤</button>
-        </div>
 
-        <div class="form-group row mb-2">
-          <label for="customerKey" class="col-sm-2 col-form-label">고객 Key</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="customerKey" v-model="customerKey">
+          <input type="text" class="form-control" v-model="orderId" readonly>
+          
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" @click="changeRandom">랜덤</button>
           </div>
         </div>
 
-        <div class="form-group row">
-          <label for="customerName" class="col-sm-2 col-form-label">고객 명</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="customerName" v-model="customerName">
-          </div>
-        </div>
+        <template>
 
-        <div class="form-group row">
-          <label for="customerEmail" class="col-sm-2 col-form-label">고객 이메일</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="customerEmail" v-model="customerEmail">
-          </div>
-        </div>
+          <h5><span class="badge badge-secondary">상품 정보</span></h5>
 
-        <div class="form-group row">
-          <label for="customerMobilePhone" class="col-sm-2 col-form-label">고객 휴대폰번호</label>
-          <div class="col-sm-10">
-            <input type="text" class="form-control" id="customerMobilePhone" v-model="customerMobilePhone">
-          </div>
-        </div>
-
-        <template v-if="product">
-          <div class="form-group row">
-            <label for="prdId" class="col-sm-2 col-form-label">상품ID</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="prdId" v-model="product.prdId" readonly>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">상품 ID</span>
             </div>
+            <input type="text" class="form-control" v-model="product.prdId" readonly>
           </div>
 
-          <div class="form-group row">
-            <label for="prdNm" class="col-sm-2 col-form-label">상품명</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="prdNm" v-model="product.prdNm" readonly>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">상품 명</span>
             </div>
+            <input type="text" class="form-control" v-model="product.prdNm" readonly>
           </div>
 
-          <div class="form-group row">
-            <label for="prdPrice" class="col-sm-2 col-form-label">금액</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control-plaintext" id="prdPrice" v-model="product.prdPrice" readonly>
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">상품 가격</span>
             </div>
+            <input type="text" class="form-control" v-model="product.prdPrice" readonly>
           </div>
+          
         </template>
 
-        <div>
-          <button type="button" class="btn btn-primary" @click="paymentButton()">결제하기</button>
-        </div>
+        <template>
+
+          <h5><span class="badge badge-secondary">고객 정보</span></h5>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">고객 Key</span>
+            </div>
+            <input type="text" class="form-control" v-model="customerKey" >
+          </div>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">고객 명</span>
+            </div>
+            <input type="text" class="form-control" v-model="customerName" >
+          </div>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">고객 연락처</span>
+            </div>
+            <input type="text" class="form-control" v-model="customerMobilePhone" >
+          </div>
+
+          <div class="input-group mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text">고객 이메일</span>
+            </div>
+            <input type="text" class="form-control" v-model="customerEmail" >
+          </div>
+
+        </template>
+
       </div>
     </div>
+
+    <div class="row justify-content-md-center mt-5">
+      <button type="button" class="ml-2 mr-2 btn btn-primary" @click="">카드 결제</button>
+      <button type="button" class="ml-2 mr-2 btn btn-info" @click="">계좌 결제</button>
+    </div>
+
   </div>
+
 </template>
 
 <script lang="ts">
@@ -95,6 +114,9 @@ export default class ProductDetailComponent extends Vue {
   // 상품 정보
   product: ProductModel | null = null
 
+  // 주문번호 : 랜덤생성
+  orderId: string | null = null
+
   mounted() {
     
     this.loadData()
@@ -113,20 +135,22 @@ export default class ProductDetailComponent extends Vue {
         this.product = result.data
       }
     }
+
+    this.changeRandom()
   }
 
-  // 주문번호 : 랜덤생성
-  orderId: string = window.btoa(Math.random().toString()).slice(0, 20)
-
-  // 고객 Key : 랜덤생성
-  customerKey: string = "reifier_20240708"
-  // 고객명
-  customerName: string = "전석호"
-  // 고객이메일
+  /**
+   * 고객 정보
+   */
+  customerKey: string = "reifier_" + new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 8)
+  customerName: string = "전토스결제"
   customerEmail: string = "reifier@kakao.com"
-  // 고객 휴대폰번호
   customerMobilePhone: string = "01062690425"
 
+  /**
+   * 토스 페이먼츠
+   * 브랜드페이 SDK
+   */
   tossPayments: any = null
   brandpay: any = null
 
@@ -152,18 +176,15 @@ export default class ProductDetailComponent extends Vue {
   //   })
   // }
 
-  changeRandom(division: string) {
-    if (division === "orderId") {
-      this.orderId = window.btoa(Math.random().toString()).slice(0, 20)
-    } else {
-      this.customerKey = window.btoa(Math.random().toString()).slice(0, 20)
-    }
+  changeRandom() {
+    this.orderId = "ORD_" + window.btoa(Math.random().toString()).slice(0, 16)
   }
 
   formatCurrency(value: number): string {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
   }
 
+  /*
   async paymentButton() {
 
     await this.brandpay.requestPayment({
@@ -183,8 +204,13 @@ export default class ProductDetailComponent extends Vue {
     })
     
   }
+  */
 
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-group-text {
+  min-width: 111px;
+}
+</style>

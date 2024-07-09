@@ -1,6 +1,6 @@
 #FileLock
-#Mon Jul 08 18:21:13 KST 2024
+#Tue Jul 09 09:02:11 KST 2024
 hostName=reifier
-id=19091a5aeef43e90a9fc36da9e975d67e453d3aa4da
+id=19094cc3ed064b673467878b1104c5bfa42cd596941
 method=file
-server=192.168.92.194\:50642
+server=192.168.92.194\:57459
