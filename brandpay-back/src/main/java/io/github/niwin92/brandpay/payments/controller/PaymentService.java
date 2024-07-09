@@ -7,6 +7,9 @@ import io.github.niwin92.brandpay.common.utility.CommonUtils;
 import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -33,39 +36,103 @@ public class PaymentService {
     @Value("${api.secretKey}")
     public String secretKey;
 
-    public String accessTokeUrl = "";
+    private HttpHeaders getAuthHeaders() {
+        String authorization = Base64.getEncoder().encodeToString((secretKey + ":").getBytes());
 
-    public ResponseData<String> accessToken(PaymentDto.Request dto) throws Exception {
-        accessTokeUrl = brandUrl + "/v1/brandpay/authorizations/access-token";
-        ResponseData<String> responseData = new ResponseData<>();
+        // HttpHeaders
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", String.format("Basic %s", authorization));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return headers;
+    }
+
+    public ResponseEntity<String> accessToken(PaymentDto.Request dto) throws Exception {
+
+        String apiUrl = brandUrl + "/authorizations/access-token";
+
         try {
             String code = dto.getCode();
             String customerKey = dto.getCustomerKey();
 
-            secretKey = secretKey + ":";
-            String encodedSecretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+            // create JSON Object
+            JSONObject requestBody = new JSONObject();
+            requestBody.put("grantType", "AuthorizationCode");
+            requestBody.put("customerKey", customerKey);
+            requestBody.put("code", code);
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", String.format("Basic %s", encodedSecretKey));
-            headers.set("Content-Type", "application/json");
+            HttpEntity<String> requestEntity = new HttpEntity<>(requestBody.toJSONString(), this.getAuthHeaders());
 
-            String body = String.format("{\"grantType\":\"AuthorizationCode\",\"customerKey\":\"%s\",\"code\":\"%s\"}", customerKey, code);
-            HttpEntity<String> entity = new HttpEntity<>(body, headers);
-            ResponseEntity<String> response = restTemplate.exchange(accessTokeUrl, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
 
             if(response.getStatusCode().equals(HttpStatus.OK)){
-                log.info(response.getBody());
-                responseData.setList(response.getBody());
-                responseData.setResult(Result.builder().code("200").message("성공").build());
+                log.info("\n#####################################\n{}\n#####################################", response.getBody());
+                // TODO: 발급 성공 비즈니스 로직을 구현
+
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             } else {
-                responseData.setResult(Result.builder().code("500").message(response.getBody()).build());
+                // TODO: 발급 실패 비즈니스 로직을 구현
+
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
             }
         } catch (Exception ex){
             log.error(ex.getMessage());
             throw new CustomServerException(ex);
-
         }
-        return responseData;
+    }
+
+    public ResponseEntity<String> brandpayConfirm(String jsonBody) throws Exception {
+
+        String apiUrl = brandUrl + "/payments/confirm";
+
+        JSONParser parser = new JSONParser();
+        String orderId;
+        String amount;
+        String paymentKey;
+        String customerKey;
+
+        try {
+
+            // 클라이언트에서 받은 JSON 요청 바디입니다.
+            JSONObject requestData = (JSONObject) parser.parse(jsonBody);
+            orderId = (String) requestData.get("orderId");
+            amount = (String) requestData.get("amount");
+            paymentKey = (String) requestData.get("paymentKey");
+            customerKey = (String) requestData.get("customerKey");
+
+        } catch (ParseException e) {
+            log.error(e.getMessage());
+            throw new CustomServerException(e);
+        }
+
+        // create JSON Object
+        JSONObject requestBody = new JSONObject();
+        requestBody.put("orderId", orderId);
+        requestBody.put("amount", amount);
+        requestBody.put("paymentKey", paymentKey);
+        requestBody.put("customerKey", customerKey);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody.toJSONString(), this.getAuthHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, String.class);
+
+        try {
+
+            if(response.getStatusCode().equals(HttpStatus.OK)){
+                log.info("\n#####################################\n{}\n#####################################", response.getBody());
+                // TODO: 결제 완료 비즈니스 로직을 구현
+
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            } else {
+                // TODO: 결제 승인 실패 비즈니스 로직을 구현
+
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            }
+        } catch (Exception ex){
+            log.error(ex.getMessage());
+            throw new CustomServerException(ex);
+        }
+
     }
 
 }
