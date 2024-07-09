@@ -67,13 +67,6 @@
 
           <div class="input-group mb-2">
             <div class="input-group-prepend">
-              <span class="input-group-text">고객 연락처</span>
-            </div>
-            <input type="text" class="form-control" v-model="customerMobilePhone" >
-          </div>
-
-          <div class="input-group mb-2">
-            <div class="input-group-prepend">
               <span class="input-group-text">고객 이메일</span>
             </div>
             <input type="text" class="form-control" v-model="customerEmail" >
@@ -85,8 +78,8 @@
     </div>
 
     <div class="row justify-content-md-center mt-5">
-      <button type="button" class="ml-2 mr-2 btn btn-primary" @click="requestPayment()">카드 결제</button>
-      <button type="button" class="ml-2 mr-2 btn btn-info" @click="requestPayment()">계좌 결제</button>
+      <button type="button" class="ml-2 mr-2 btn btn-primary" @click="requestPayment('REDIRECT')">Redirect 결제</button>
+      <button type="button" class="ml-2 mr-2 btn btn-info" @click="requestPayment('PROMISE')">Promise 결제</button>
     </div>
 
   </div>
@@ -100,6 +93,7 @@ import { ProductModel } from '@/models/product-model'
 import ProductCardComponent from '@/components/product/product-card.vue'
 
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk"
+import { RequestPaymentParams } from '@/models/payments-model'
 
 @Component({
   components: {
@@ -123,7 +117,6 @@ export default class ProductDetailComponent extends Vue {
   customerKey: string = "reifier_" + new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 8)
   customerName: string = "전토스결제"
   customerEmail: string = "reifier@kakao.com"
-  customerMobilePhone: string = "01062690425"
 
   mounted() {
     
@@ -210,11 +203,11 @@ export default class ProductDetailComponent extends Vue {
    * [ 결제 ] 버튼 클릭 > 결제창 오픈
    * @docs https://docs.tosspayments.com/sdk/v2/js#brandpayrequestpayment
    */
-  async requestPayment() {
+  async requestPayment(method: "REDIRECT" | "PROMISE") {
 
-    console.log("===== # 02. 결제창 오픈 =====")
+    console.log("===== # 02. 결제창 오픈 (" + method + " 방식) =====")
 
-    const requestPaymentParams = {
+    const requestPaymentParams: RequestPaymentParams = {
       
       amount: {
         /**
@@ -262,7 +255,12 @@ export default class ProductDetailComponent extends Vue {
        * 자세한 내용은 세금 처리 가이드에서 확인
        */
       //taxFreeAmount: 0,
+    }
 
+    /**
+     * 리다이렉트 방식일 경우
+     */
+    if(method === "REDIRECT") {
       /**
        * 결제 요청이 성공하면 리다이렉트되는 URL
        * `https://www.example.com/success`와 같이 오리진을 포함한 형태로 설정
@@ -273,7 +271,8 @@ export default class ProductDetailComponent extends Vue {
        * [브랜드페이 결제 승인 API](/reference/brandpay#결제-승인)를 호출해서 결제를 완료해야 함
        * {successUrl}?amount={AMOUNT}&orderId={ORDER_ID}&paymentKey={PAYMENT_KEY}
        */
-      successUrl: window.location.origin + "/api/payments/callback-success",
+
+      requestPaymentParams.successUrl = window.location.origin + `/payments/brandpay-success?customerKey=${this.customerKey}`
 
       /**
        * 결제 요청이 실패하면 리다이렉트되는 URL
@@ -284,10 +283,10 @@ export default class ProductDetailComponent extends Vue {
        * 쿼리 파라미터로 에러 코드와 메시지를 확인
        * {failUrl}?code={ERROR_CODE}&message={ERROR_MESSAGE}&orderId={ORDER_ID}
        */
-      failUrl: window.location.origin + '/api/payments/callback-fail',
+      requestPaymentParams.failUrl = window.location.origin + "/payments/brandpay-fail"
     }
 
-    console.log("requestPaymentParams", requestPaymentParams)
+    console.log("requestPaymentParams (" + method + ")", requestPaymentParams)
     
     /**
      * 결제 요청 전
@@ -295,9 +294,48 @@ export default class ProductDetailComponent extends Vue {
      * 
      * 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도
      */
+
     // TODO 아래 로직 추가해야함
 
-    await this.brandpay.requestPayment(requestPaymentParams)
+
+    if(method === "REDIRECT") {
+      await this.brandpay.requestPayment(requestPaymentParams)
+        .catch((err: any) => {
+          console.log("결제 실패", err)
+
+          if (err.code === "USER_CANCEL") {
+            console.log("사용자 취소")
+          } else {
+            console.log("기타 에러 상황", err.code, err.message)
+            this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
+          }
+        })
+    } else {
+      await this.brandpay.requestPayment(requestPaymentParams)
+        .then((res: any) => {
+          console.log("결제 성공", res)
+
+          // 결제 승인 요청
+          res.customerKey = this.customerKey
+
+          return this.$axios.post("/api/payments/brandpay-confirm", res)
+        }).then(() => {
+          console.log("결제 성공 : 리다이렉트")
+
+          // 결제 성공 페이지로 리다이렉트
+          this.$router.push("/payments/brandpay-success")
+        })
+        .catch((err: any) => {
+          console.log("결제 실패", err)
+
+          if (err.code === "USER_CANCEL") {
+            console.log("사용자 취소")
+          } else {
+            console.log("기타 에러 상황", err.code, err.message)
+            this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
+          }
+        })
+    }
 
   }
 
