@@ -1,12 +1,12 @@
 <template>
   <div v-if="product">
-    <div class="row justify-content-md-center mt-5">
+    <div class="row mt-5">
 
-      <div class="col col-lg-5 row justify-content-center">
-        <img :src="product.prdImg" class="img-thumbnail" alt="product.prdNm" />
+      <div class="col-sm-12 col-md-6">
+        <img :src="product.prdImg" class="img-thumbnail" alt="product.prdNm" style="width: 100%; height: 100%;" />
       </div>
 
-      <div class="col col-lg-5">
+      <div class="col-sm-12 col-md-6">
 
         <div class="input-group mb-3">
           <div class="input-group-prepend">
