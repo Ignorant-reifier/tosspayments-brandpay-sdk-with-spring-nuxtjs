@@ -99,8 +99,6 @@ export default class BrandpaySuccess extends Vue {
     }
 
     get formattedResponseData(): string {
-      console.log("formattedResponseData 1", this.responseData)
-      console.log("formattedResponseData 2", JSON.stringify(this.responseData, null, 4))
       return this.responseData ? JSON.stringify(this.responseData, null, 4) : ''
     }
 

@@ -22,7 +22,7 @@
 
         <template>
 
-          <h5><span class="badge badge-secondary">상품 정보</span></h5>
+          <h5><span class="badge badge-info">상품 정보</span></h5>
 
           <div class="input-group mb-2">
             <div class="input-group-prepend">
@@ -49,37 +49,72 @@
 
         <template>
 
-          <h5><span class="badge badge-secondary">고객 정보</span></h5>
+          <h5><span class="badge badge-danger">고객 정보</span></h5>
+
+          <div class="btn-group btn-group-toggle mt-1 mb-1" style="width: 100%;">
+            <label v-for="(customer, index) in customers" :key="index"
+              class="btn btn-outline-secondary"
+              style="font-size: 12px;"
+              :class="{ active: customerKey === customer.customerKey }"
+              @click="selectedCustomer(customer)"
+            >
+              <input type="radio" name="options" :checked="customerKey === customer.customerKey">{{ customer.customerName === "" ? "직접입력" : customer.customerName}}
+            </label>
+          </div>
 
           <div class="input-group mb-2">
             <div class="input-group-prepend">
-              <span class="input-group-text">고객 Key</span>
+              <span class="input-group-text">
+                고객 Key
+                <span class="ml-2" style="font-weight: bold; color: red;">*</span>
+              </span>
             </div>
             <input type="text" class="form-control" v-model="customerKey" >
           </div>
 
           <div class="input-group mb-2">
             <div class="input-group-prepend">
-              <span class="input-group-text">고객 명</span>
+              <span class="input-group-text">
+                고객 명
+                <span class="ml-2" style="font-weight: bold; color: red;">*</span>
+              </span>
             </div>
             <input type="text" class="form-control" v-model="customerName" >
           </div>
 
-          <div class="input-group mb-2">
+          <div class="input-group mb-1">
             <div class="input-group-prepend">
-              <span class="input-group-text">고객 이메일</span>
+              <span class="input-group-text">
+                고객 메일
+                <span class="ml-2" style="font-weight: bold; color: red;">*</span>
+              </span>
             </div>
             <input type="text" class="form-control" v-model="customerEmail" >
           </div>
+
+          <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" @click="applyCustomer()">
+            고객정보 적용하기
+            <span class="ml-2" style="font-weight: bold; color: red;">*</span>
+          </button>
 
         </template>
 
       </div>
     </div>
 
-    <div class="row justify-content-md-center mt-5">
-      <button type="button" class="ml-2 mr-2 btn btn-primary" @click="requestPayment('REDIRECT')">Redirect 결제</button>
-      <button type="button" class="ml-2 mr-2 btn btn-info" @click="requestPayment('PROMISE')">Promise 결제</button>
+    <div v-if="brandpayFlag">
+      <div class="row justify-content-md-center mt-5">
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="requestPayment('REDIRECT')">Redirect 결제</button>
+        <button type="button" class="ml-2 mr-2 btn btn-info" @click="requestPayment('PROMISE')">Promise 결제</button>
+      </div>
+
+      <div class="row justify-content-md-center mt-5">
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="addPaymentMethod()">결제수단추가</button>
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="changeOneTouchPay()">원터치페이설정변경</button>
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="isOneTouchPayEnabled()">원터치결제사용가능여부 조회</button>
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="changePassword()">비밀번호변경</button>
+        <button type="button" class="ml-2 mr-2 btn btn-primary" @click="openSettings()">브랜드페이 설정 열기</button>
+      </div>
     </div>
 
   </div>
@@ -87,13 +122,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { ProductModel } from '@/models/product-model'
 
 import ProductCardComponent from '@/components/product/product-card.vue'
 
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk"
 import { RequestPaymentParams } from '@/models/payments-model'
+
+import { BvToast  } from 'bootstrap-vue'
 
 @Component({
   components: {
@@ -111,20 +148,39 @@ export default class ProductDetailComponent extends Vue {
   // 상품 정보
   product: ProductModel | null = null
 
+  // 고객 더미 데이터
+  customers: { customerKey: string, customerName: string, customerEmail: string }[] = [
+    { customerKey: "", customerName: "", customerEmail: "" },
+    { customerKey: "toss_brandpay_tester_1", customerName: "전테스터", customerEmail: "jeon_tester_1@test.com" },
+    { customerKey: "toss_brandpay_manager_2", customerName: "유매니저", customerEmail: "yu_manager_2@gamil.com" },
+    { customerKey: "toss_brandpay_master_3", customerName: "윤마스터", customerEmail: "yoon_master_3@kakao.com" },
+    { customerKey: "toss_brandpay_developer_4", customerName: "이디벨롭", customerEmail: "lee_developer_4@naver.com" },
+    { customerKey: "toss_brandpay_admin_5", customerName: "최관리자", customerEmail: "choi_admin_5@nate.com" },
+    { customerKey: "toss_brandpay_pro_6", customerName: "차프로", customerEmail: "cha_pro_6@custom.com" },
+  ]
   /**
    * 고객 정보
    */
-  customerKey: string = "reifier_" + new Date().toISOString().replace(/[^0-9]/g, "").slice(0, 8)
-  customerName: string = "전토스결제"
-  customerEmail: string = "reifier@kakao.com"
+  customerKey: string = ""
+  customerName: string = ""
+  customerEmail: string = ""
 
   mounted() {
     
     this.loadData()
 
     // 브랜드페이 SDK 객체 생성
-    this.fetchBrandpay()
+    //this.fetchBrandpay()
 
+  }
+
+  selectedCustomer(customer: { customerKey: string, customerName: string, customerEmail: string }) {
+    this.customerKey = customer.customerKey
+    this.customerName = customer.customerName
+    this.customerEmail = customer.customerEmail
+
+    this.brandpayFlag = false
+    this.brandpay = null
   }
 
   async loadData() {
@@ -142,12 +198,63 @@ export default class ProductDetailComponent extends Vue {
     this.changeRandom()
   }
 
+  count: number = 0
+
+  makeToast(title: string, message: string, variant = null) {
+
+    // Use a shorter name for this.$createElement
+    const h = this.$createElement
+
+    // Create the message
+    const vNodeMsg = h(
+      'p',
+      { class: ['text-center', 'mb-0'] },
+      [
+        h('b-spinner', { props: { type: 'grow', small: true } }),
+        ' ', message, ' ',
+        h('b-spinner', { props: { type: 'grow', small: true } })
+      ]
+    )
+
+    this.$bvToast.toast([vNodeMsg], {
+      title: title,
+      variant: variant,
+      solid: true,
+      toaster: 'b-toaster-bottom-right',
+    })
+  }
+
+  applyCustomer() {
+
+    let toastTitle = ""
+
+    if(this.customerKey === "") {
+      toastTitle += " [ 고객 Key ] "
+    }
+
+    if(this.customerName === "") {
+      toastTitle += " [ 고객 명 ] "
+    }
+
+    if(this.customerEmail === "") {
+      toastTitle += " [ 고객 메일 ] "
+    }
+
+    if(toastTitle !== "") {
+      this.makeToast(toastTitle, "필수정보를 입력해주세요.", "danger")
+      return
+    }
+
+    this.fetchBrandpay()
+  }
+
   /**
    * < STEP 0 >
    * 
    * 토스 페이먼츠 객체
    * 클라이언트 키
    */
+  brandpayFlag: boolean = false
   brandpay: any = null
   clientKey: string = 'test_ck_5OWRapdA8dP6a9GmjzkR8o1zEqZK'
 
@@ -188,9 +295,14 @@ export default class ProductDetailComponent extends Vue {
 
       this.brandpay = brandpay
 
+      this.makeToast("# 01. 브랜드페이 객체 생성 - 성공", "자세한 내용은 개발자 콘솔을 확인하세요.", "success")
+
+      this.brandpayFlag = true
     } catch (error) {
-      console.log("===== # 01. 토스페이먼츠 초기화 ERROR =====")
+      this.makeToast("# 01. 브랜드페이 객체 생성 - 실패",  "01. 토스페이먼츠 초기화 ERROR : 자세한 내용은 개발자 콘솔을 확인하세요.", "danger")
       console.error(error)
+
+      this.brandpayFlag = false
     }
     
   }
@@ -301,10 +413,13 @@ export default class ProductDetailComponent extends Vue {
     if(method === "REDIRECT") {
       await this.brandpay.requestPayment(requestPaymentParams)
         .catch((err: any) => {
-          console.log("결제 실패", err)
+          console.log("결제 실패 (Redirect)")
+          console.dir(err)
 
           if (err.code === "USER_CANCEL") {
             console.log("사용자 취소")
+            let message = `${err.code} : ${err.message}`
+            this.makeToast("# 02. 결제창 오픈 (Redirect) : 실패",  message, "danger")
           } else {
             console.log("기타 에러 상황", err.code, err.message)
             this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
@@ -318,18 +433,16 @@ export default class ProductDetailComponent extends Vue {
           // 결제 승인 요청
           res.customerKey = this.customerKey
 
-          return this.$axios.post("/api/payments/brandpay-confirm", res)
-        }).then(() => {
-          console.log("결제 성공 : 리다이렉트")
-
-          // 결제 성공 페이지로 리다이렉트
-          this.$router.push("/payments/brandpay-success")
+          this.$router.push(`/payments/brandpay-success?orderId=${res.orderId}&amount=${res.amount.value}&paymentKey=${res.paymentKey}&customerKey=${res.customerKey}`)
         })
         .catch((err: any) => {
-          console.log("결제 실패", err)
+          console.log("결제 실패 (Promise)")
+          console.dir(err)
 
           if (err.code === "USER_CANCEL") {
             console.log("사용자 취소")
+            let message = `${err.code} : ${err.message}`
+            this.makeToast("# 02. 결제창 오픈 (Promise) : 실패",  message, "danger")
           } else {
             console.log("기타 에러 상황", err.code, err.message)
             this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
@@ -337,6 +450,47 @@ export default class ProductDetailComponent extends Vue {
         })
     }
 
+  }
+
+  /**
+   * brandpay 결제수단 추가
+   */
+  async addPaymentMethod() {
+    console.log("===== 결제수단 추가 =====")
+    await this.brandpay.addPaymentMethod()
+  }
+
+  /**
+   * brandpay 결제 관리 설정창 열기
+   */
+  async openSettings() {
+    console.log("===== 설정창 열기 =====")
+    await this.brandpay.openSettings()
+  }
+
+  /**
+   * brandpay 비밀번호 변경
+   */
+  async changePassword() {
+    console.log("===== 비밀번호 변경 =====")
+    await this.brandpay.changePassword()
+  }
+
+  /**
+   * brandpay 원터치 결제 변경
+   */
+  async changeOneTouchPay() {
+    console.log("===== 원터치 결제 변경 =====")
+    await this.brandpay.changeOneTouchPay()
+  }
+
+  /**
+   * brandpay 원터치 결제 활성화 여부
+   */
+  async isOneTouchPayEnabled() {
+    console.log("===== 원터치 결제 활성화 여부 =====")
+    const result = await this.brandpay.isOneTouchPayEnabled()
+    console.log(result)
   }
 
   /**
@@ -354,28 +508,6 @@ export default class ProductDetailComponent extends Vue {
   formatCurrency(value: number): string {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " 원";
   }
-
-  /*
-  async paymentButton() {
-
-    await this.brandpay.requestPayment({
-      amount: {
-        currency: "KRW",
-        //value: this.product.prdPrice
-      },
-      orderId: this.orderId,
-      //orderName: this.product.prdNm,
-
-      customerName: this.customerName,
-      customerEmail: this.customerEmail,
-      //customerMobilePhone: this.customerMobilePhone,
-
-      successUrl: window.location.origin + "/api/payments/callback-success",
-      failUrl: window.location.origin + '/api/payments/callback-fail',
-    })
-    
-  }
-  */
 
 }
 </script>
