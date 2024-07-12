@@ -1,12 +1,16 @@
 spring:
   profiles:
     active: local
+  output:
+    ansi:
+      enabled: always
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   jpa:
     hibernate:
       ddl-auto: update
+#      ddl-auto: create-drop
     properties:
       hibernate:
         show_sql: true
@@ -33,10 +37,18 @@ spring:
     url: jdbc:h2:file:./app/h2-db/db;AUTO_SERVER=TRUE;
     username: test
     password: test
+  sql:
+    init:
+      mode: always
+      data-locations:
+      - classpath:sql/data.sql
+      schema-locations:
+      - classpath:sql/schema.sql
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
 api:
   url: https://api.tosspayments.com/v1/brandpay
   secretKey: secretKey

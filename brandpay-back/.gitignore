@@ -36,6 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-app/h2-db/db.lock.db
-app/h2-db/db.mv.db
-*.log
+app/

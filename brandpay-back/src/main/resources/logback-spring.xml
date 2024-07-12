@@ -8,7 +8,7 @@
         <param name="encoding" value="UTF-8" />
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %-3level %logger{5} - %msg %n</pattern>
+            <pattern>%d{yyyyMMdd HH:mm:ss.SSS} [%thread] %highlight(%-3level) %logger{5} - %msg %n</pattern>
         </encoder>
     </appender>
 
@@ -44,7 +44,7 @@
     <!-- TRACE > DEBUG > INFO > WARN > ERROR, 대소문자 구분 안함 -->
     <!-- profile 을 읽어서 appender 을 설정할수 있다.(phase별 파일을 안만들어도 되는 좋은 기능) -->
     <springProfile name="local">
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="CONSOLE" />
         </root>
     </springProfile>
