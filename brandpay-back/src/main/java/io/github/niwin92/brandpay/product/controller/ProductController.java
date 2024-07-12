@@ -1,5 +1,7 @@
-package io.github.niwin92.brandpay.product;
+package io.github.niwin92.brandpay.product.controller;
 
+import io.github.niwin92.brandpay.product.ProductDto;
+import io.github.niwin92.brandpay.product.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
