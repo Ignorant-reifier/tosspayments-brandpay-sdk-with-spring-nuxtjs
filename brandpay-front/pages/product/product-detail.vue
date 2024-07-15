@@ -186,7 +186,8 @@ export default class ProductDetailComponent extends Vue {
       if (customerInfo.status === 200) {
         this.customers = customerInfo.data
       }
-      this.customers.push()
+
+      this.customers.unshift({ customerKey: "", customerName: "", customerEmail: "" })
 
     }
 
