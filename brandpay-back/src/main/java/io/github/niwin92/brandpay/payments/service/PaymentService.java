@@ -1,10 +1,7 @@
-package io.github.niwin92.brandpay.payments.controller;
+package io.github.niwin92.brandpay.payments.service;
 
 import io.github.niwin92.brandpay.common.exception.CustomServerException;
-import io.github.niwin92.brandpay.common.response.ResponseData;
-import io.github.niwin92.brandpay.common.response.Result;
-import io.github.niwin92.brandpay.common.utility.CommonUtils;
-import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
+import io.github.niwin92.brandpay.payments.dto.PaymentDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -16,10 +13,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Slf4j

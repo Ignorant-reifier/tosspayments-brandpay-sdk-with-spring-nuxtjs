@@ -11,13 +11,12 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Product")
+@Table(name="product")
 public class Product {
 
     @Id
     @Column(unique = true, nullable = false)
     private String prdId;
-
     private String prdNm;
     private int prdPrice;
     private String prdDesc;

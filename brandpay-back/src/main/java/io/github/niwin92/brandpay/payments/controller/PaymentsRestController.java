@@ -1,7 +1,8 @@
 package io.github.niwin92.brandpay.payments.controller;
 
 import io.github.niwin92.brandpay.common.exception.CustomServerException;
-import io.github.niwin92.brandpay.payments.controller.dto.PaymentDto;
+import io.github.niwin92.brandpay.payments.dto.PaymentDto;
+import io.github.niwin92.brandpay.payments.service.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

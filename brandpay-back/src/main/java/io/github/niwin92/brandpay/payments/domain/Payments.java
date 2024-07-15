@@ -1,7 +1,6 @@
 package io.github.niwin92.brandpay.payments.domain;
 
 import io.github.niwin92.brandpay.common.entity.BaseEntity;
-import io.github.niwin92.brandpay.payments.controller.dto.Payment;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -15,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="PAYMENTS")
+@Table(name="payments")
 public class Payments extends BaseEntity {
 
         @Column(name = "mid")

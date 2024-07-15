@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="io.github.niwin92.brandpay.product.ProductMapper">
+<mapper namespace="io.github.niwin92.brandpay.product.mapper.ProductMapper">
 
-    <select id="findAll" resultType="io.github.niwin92.brandpay.product.ProductDto">
+    <select id="findAll" resultType="io.github.niwin92.brandpay.product.domain.Product">
         SELECT * FROM PRODUCT
     </select>
 
-    <select id="findById" parameterType="String" resultType="io.github.niwin92.brandpay.product.ProductDto">
+    <select id="findById" parameterType="String" resultType="io.github.niwin92.brandpay.product.domain.Product">
         SELECT * FROM PRODUCT
         WHERE PRD_ID = #{prdId}
     </select>

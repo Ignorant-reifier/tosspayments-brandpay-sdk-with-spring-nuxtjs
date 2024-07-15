@@ -1,7 +1,7 @@
 package io.github.niwin92.brandpay.product.controller;
 
-import io.github.niwin92.brandpay.product.ProductDto;
-import io.github.niwin92.brandpay.product.ProductService;
+import io.github.niwin92.brandpay.product.domain.Product;
+import io.github.niwin92.brandpay.product.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,23 +15,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/product")
 @Slf4j
-public class ProductController {
+public class ProductRestController {
 
     @Autowired
     private ProductService productService;
 
     @GetMapping("/product-list")
-    public ResponseEntity<List<ProductDto>> productList() {
+    public ResponseEntity<List<Product>> productList() {
 
-        List<ProductDto> productList = productService.findAll();
+        List<Product> productList = productService.findAll();
 
         return ResponseEntity.ok().body(productList);
     }
 
     @GetMapping("/{prdId}")
-    public ResponseEntity<ProductDto> productDetail(@PathVariable String prdId) {
+    public ResponseEntity<Product> productDetail(@PathVariable String prdId) {
 
-        ProductDto product = productService.findById(prdId);
+        Product product = productService.findById(prdId);
 
         return ResponseEntity.ok().body(product);
     }
