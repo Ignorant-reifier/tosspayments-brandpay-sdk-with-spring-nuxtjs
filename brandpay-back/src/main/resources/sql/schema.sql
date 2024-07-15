@@ -8,3 +8,11 @@ create table product (
     prd_price integer not null,
     primary key (prd_id)
 );
+
+drop table customer if exists;
+create table customer (
+   customer_key varchar(255) not null,
+    customer_email varchar(255),
+    customer_name varchar(255),
+    primary key (customer_key)
+);

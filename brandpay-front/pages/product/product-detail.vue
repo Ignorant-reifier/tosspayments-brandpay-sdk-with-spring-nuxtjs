@@ -14,7 +14,7 @@
           </div>
 
           <input type="text" class="form-control" v-model="orderId" readonly>
-          
+
           <div class="input-group-append">
             <button class="btn btn-outline-secondary" type="button" @click="changeRandom">랜덤</button>
           </div>
@@ -44,7 +44,7 @@
             </div>
             <input type="text" class="form-control" v-model="product.prdPrice" readonly>
           </div>
-          
+
         </template>
 
         <template>
@@ -52,13 +52,11 @@
           <h5><span class="badge badge-danger">고객 정보</span></h5>
 
           <div class="btn-group btn-group-toggle mt-1 mb-1" style="width: 100%;">
-            <label v-for="(customer, index) in customers" :key="index"
-              class="btn btn-outline-secondary"
-              style="font-size: 12px;"
-              :class="{ active: customerKey === customer.customerKey }"
-              @click="selectedCustomer(customer)"
-            >
-              <input type="radio" name="options" :checked="customerKey === customer.customerKey">{{ customer.customerName === "" ? "직접입력" : customer.customerName}}
+            <label v-for="(customer, index) in customers" :key="index" class="btn btn-outline-secondary"
+              style="font-size: 12px;" :class="{ active: customerKey === customer.customerKey }"
+              @click="selectedCustomer(customer)">
+              <input type="radio" name="options" :checked="customerKey === customer.customerKey">{{ customer.customerName
+                === "" ? "직접입력" : customer.customerName }}
             </label>
           </div>
 
@@ -69,7 +67,7 @@
                 <span class="ml-2" style="font-weight: bold; color: red;">*</span>
               </span>
             </div>
-            <input type="text" class="form-control" v-model="customerKey" >
+            <input type="text" class="form-control" v-model="customerKey">
           </div>
 
           <div class="input-group mb-2">
@@ -79,7 +77,7 @@
                 <span class="ml-2" style="font-weight: bold; color: red;">*</span>
               </span>
             </div>
-            <input type="text" class="form-control" v-model="customerName" >
+            <input type="text" class="form-control" v-model="customerName">
           </div>
 
           <div class="input-group mb-1">
@@ -89,7 +87,7 @@
                 <span class="ml-2" style="font-weight: bold; color: red;">*</span>
               </span>
             </div>
-            <input type="text" class="form-control" v-model="customerEmail" >
+            <input type="text" class="form-control" v-model="customerEmail">
           </div>
 
           <button type="button" class="btn btn-outline-danger btn-sm" style="width: 100%;" @click="applyCustomer()">
@@ -118,7 +116,6 @@
     </div>
 
   </div>
-
 </template>
 
 <script lang="ts">
@@ -130,7 +127,7 @@ import ProductCardComponent from '@/components/product/product-card.vue'
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk"
 import { RequestPaymentParams } from '@/models/payments-model'
 
-import { BvToast  } from 'bootstrap-vue'
+import { BvToast } from 'bootstrap-vue'
 
 @Component({
   components: {
@@ -149,15 +146,7 @@ export default class ProductDetailComponent extends Vue {
   product: ProductModel | null = null
 
   // 고객 더미 데이터
-  customers: { customerKey: string, customerName: string, customerEmail: string }[] = [
-    { customerKey: "", customerName: "", customerEmail: "" },
-    { customerKey: "toss_brandpay_tester_1", customerName: "전테스터", customerEmail: "jeon_tester_1@test.com" },
-    { customerKey: "toss_brandpay_manager_2", customerName: "유매니저", customerEmail: "yu_manager_2@gamil.com" },
-    { customerKey: "toss_brandpay_master_3", customerName: "윤마스터", customerEmail: "yoon_master_3@kakao.com" },
-    { customerKey: "toss_brandpay_developer_4", customerName: "이디벨롭", customerEmail: "lee_developer_4@naver.com" },
-    { customerKey: "toss_brandpay_admin_5", customerName: "최관리자", customerEmail: "choi_admin_5@nate.com" },
-    { customerKey: "toss_brandpay_pro_6", customerName: "차프로", customerEmail: "cha_pro_6@custom.com" },
-  ]
+  customers: { customerKey: string, customerName: string, customerEmail: string }[] = []
   /**
    * 고객 정보
    */
@@ -166,7 +155,6 @@ export default class ProductDetailComponent extends Vue {
   customerEmail: string = ""
 
   mounted() {
-    
     this.loadData()
 
     // 브랜드페이 SDK 객체 생성
@@ -189,14 +177,22 @@ export default class ProductDetailComponent extends Vue {
     if (prdId) {
       this.prdId = prdId as string
 
-      const result = await this.$axios.get(`/api/product/${this.prdId}`)
-      if (result.status === 200) {
-        this.product = result.data
+      const productInfo = await this.$axios.get(`/api/product/${this.prdId}`)
+      if (productInfo.status === 200) {
+        this.product = productInfo.data
       }
+
+      const customerInfo = await this.$axios.get(`/api/customer`)
+      if (customerInfo.status === 200) {
+        this.customers = customerInfo.data
+      }
+      this.customers.push()
+
     }
 
     this.changeRandom()
   }
+
 
   count: number = 0
 
@@ -228,19 +224,19 @@ export default class ProductDetailComponent extends Vue {
 
     let toastTitle = ""
 
-    if(this.customerKey === "") {
+    if (this.customerKey === "") {
       toastTitle += " [ 고객 Key ] "
     }
 
-    if(this.customerName === "") {
+    if (this.customerName === "") {
       toastTitle += " [ 고객 명 ] "
     }
 
-    if(this.customerEmail === "") {
+    if (this.customerEmail === "") {
       toastTitle += " [ 고객 메일 ] "
     }
 
-    if(toastTitle !== "") {
+    if (toastTitle !== "") {
       this.makeToast(toastTitle, "필수정보를 입력해주세요.", "danger")
       return
     }
@@ -299,12 +295,12 @@ export default class ProductDetailComponent extends Vue {
 
       this.brandpayFlag = true
     } catch (error) {
-      this.makeToast("# 01. 브랜드페이 객체 생성 - 실패",  "01. 토스페이먼츠 초기화 ERROR : 자세한 내용은 개발자 콘솔을 확인하세요.", "danger")
+      this.makeToast("# 01. 브랜드페이 객체 생성 - 실패", "01. 토스페이먼츠 초기화 ERROR : 자세한 내용은 개발자 콘솔을 확인하세요.", "danger")
       console.error(error)
 
       this.brandpayFlag = false
     }
-    
+
   }
 
   /**
@@ -320,7 +316,7 @@ export default class ProductDetailComponent extends Vue {
     console.log("===== # 02. 결제창 오픈 (" + method + " 방식) =====")
 
     const requestPaymentParams: RequestPaymentParams = {
-      
+
       amount: {
         /**
          * 결제 통화
@@ -372,7 +368,7 @@ export default class ProductDetailComponent extends Vue {
     /**
      * 리다이렉트 방식일 경우
      */
-    if(method === "REDIRECT") {
+    if (method === "REDIRECT") {
       /**
        * 결제 요청이 성공하면 리다이렉트되는 URL
        * `https://www.example.com/success`와 같이 오리진을 포함한 형태로 설정
@@ -399,7 +395,7 @@ export default class ProductDetailComponent extends Vue {
     }
 
     console.log("requestPaymentParams (" + method + ")", requestPaymentParams)
-    
+
     /**
      * 결제 요청 전
      * @todo orderId, amount 를 서버에 저장
@@ -410,7 +406,7 @@ export default class ProductDetailComponent extends Vue {
     // TODO 아래 로직 추가해야함
 
 
-    if(method === "REDIRECT") {
+    if (method === "REDIRECT") {
       await this.brandpay.requestPayment(requestPaymentParams)
         .catch((err: any) => {
           console.log("결제 실패 (Redirect)")
@@ -419,7 +415,7 @@ export default class ProductDetailComponent extends Vue {
           if (err.code === "USER_CANCEL") {
             console.log("사용자 취소")
             let message = `${err.code} : ${err.message}`
-            this.makeToast("# 02. 결제창 오픈 (Redirect) : 실패",  message, "danger")
+            this.makeToast("# 02. 결제창 오픈 (Redirect) : 실패", message, "danger")
           } else {
             console.log("기타 에러 상황", err.code, err.message)
             this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
@@ -442,7 +438,7 @@ export default class ProductDetailComponent extends Vue {
           if (err.code === "USER_CANCEL") {
             console.log("사용자 취소")
             let message = `${err.code} : ${err.message}`
-            this.makeToast("# 02. 결제창 오픈 (Promise) : 실패",  message, "danger")
+            this.makeToast("# 02. 결제창 오픈 (Promise) : 실패", message, "danger")
           } else {
             console.log("기타 에러 상황", err.code, err.message)
             this.$router.push(`/brandpay-fail?code=${err.code}&message=${err.message}`);
